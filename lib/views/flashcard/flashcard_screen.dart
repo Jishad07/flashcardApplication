@@ -13,26 +13,22 @@ class _FlashCardState extends State<FlashCard> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  // List of flashcards (words and meanings)
   final List<Map<String, String>> flashcards = List.generate(
     15,
     (index) => {
-      'word': 'Word $index', // Example word
-      'meaning': 'Meaning of Word $index', // Example meaning
+      'word': 'Word $index',
+      'meaning': 'Meaning of Word $index',
     },
   );
 
-  // Track the state of the card (front or back)
   bool isFlipped = false;
 
-  // Method to flip the card between front and back
   void _flipCard() {
     setState(() {
       isFlipped = !isFlipped;
     });
   }
 
-  // Method to go to the next page
   void _nextPage() {
     if (_currentPage < flashcards.length - 1) {
       _pageController.nextPage(
@@ -41,12 +37,11 @@ class _FlashCardState extends State<FlashCard> {
       );
       setState(() {
         _currentPage++;
-        isFlipped = false;  // Flip the card back to the front when moving to the next page
+        isFlipped = false;
       });
     }
   }
 
-  // Method to go to the previous page
   void _previousPage() {
     if (_currentPage > 0) {
       _pageController.previousPage(
@@ -55,7 +50,7 @@ class _FlashCardState extends State<FlashCard> {
       );
       setState(() {
         _currentPage--;
-        isFlipped = false;  // Flip the card back to the front when moving to the previous page
+        isFlipped = false;
       });
     }
   }
@@ -64,12 +59,12 @@ class _FlashCardState extends State<FlashCard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(150.0), // Height of the AppBar
+        preferredSize: const Size.fromHeight(150.0),
         child: ClipPath(
-          clipper: BottomRoundedAppBarClipper(), // Use the custom clipper
+          clipper: BottomRoundedAppBarClipper(),
           child: AppBar(
             backgroundColor: Colors.purple,
-            elevation: 0, // Remove default AppBar shadow
+            elevation: 0,
             title: const Text(
               'FlashCard',
               style: TextStyle(color: Colors.white),
@@ -84,7 +79,6 @@ class _FlashCardState extends State<FlashCard> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            // Row with title and circular progress indicator
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -95,20 +89,18 @@ class _FlashCardState extends State<FlashCard> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                // Circular Progress Indicator with Text Below
                 Stack(
-                  alignment: Alignment.center, // Align the text in the center of the progress indicator
+                  alignment: Alignment.center,
                   children: [
-                    // Circular Progress Indicator
                     CircularProgressIndicator(
-                      value: (_currentPage + 1) / 15, // Progress based on current page
-                      strokeWidth: 4, // Thickness of the progress bar
-                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.purple),
+                      value: (_currentPage + 1) / 15,
+                      strokeWidth: 4,
+                      valueColor:
+                          const AlwaysStoppedAnimation<Color>(Colors.purple),
                       backgroundColor: Colors.transparent,
                     ),
-                    // Text in the center of the CircularProgressIndicator
                     Text(
-                      "${_currentPage + 1}/15", // Display current page number starting from 1
+                      "${_currentPage + 1}/15",
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 12,
@@ -119,10 +111,7 @@ class _FlashCardState extends State<FlashCard> {
                 ),
               ],
             ),
-
-            const SizedBox(height: 30), // Spacing between text/circle and cards
-
-            // PageView to display cards
+            const SizedBox(height: 30),
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
@@ -130,7 +119,7 @@ class _FlashCardState extends State<FlashCard> {
                 onPageChanged: (index) {
                   setState(() {
                     _currentPage = index;
-                    isFlipped = false; // Reset the card to the front when the page changes
+                    isFlipped = false;
                   });
                 },
                 itemBuilder: (context, index) {
@@ -152,7 +141,7 @@ class _FlashCardState extends State<FlashCard> {
                                 padding: const EdgeInsets.all(16.0),
                                 child: Center(
                                   child: Text(
-                                    card['meaning']!, // Accessing 'meaning' correctly
+                                    card['meaning']!,
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 20,
@@ -172,11 +161,12 @@ class _FlashCardState extends State<FlashCard> {
                                 width: 300,
                                 padding: const EdgeInsets.all(16.0),
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
                                   children: [
                                     const SizedBox(height: 20),
                                     Text(
-                                      card['word']!, // Accessing 'word' correctly
+                                      card['word']!,
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 50,
@@ -190,7 +180,6 @@ class _FlashCardState extends State<FlashCard> {
                                         color: Colors.white,
                                       ),
                                     ),
-                                    // New button after the volume button
                                     GestureDetector(
                                       onTap: () {
                                         _flipCard();
@@ -200,10 +189,12 @@ class _FlashCardState extends State<FlashCard> {
                                         width: 50,
                                         decoration: BoxDecoration(
                                           color: Colors.white,
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                         ),
                                         child: const Center(
-                                          child: Icon(Icons.arrow_forward_ios_outlined),
+                                          child: Icon(
+                                              Icons.arrow_forward_ios_outlined),
                                         ),
                                       ),
                                     ),
@@ -216,10 +207,7 @@ class _FlashCardState extends State<FlashCard> {
                 },
               ),
             ),
-
-            const SizedBox(height: 30), // Spacing between cards and the row of buttons
-
-            // Row with OutlinedButtons for navigating through pages
+            const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
