@@ -1,62 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '../../viewmodels/flashcard_controller.dart';
 import '../../widgets/appbar_widget.dart';
 
-class FlashCard extends StatefulWidget {
+class FlashCard extends StatelessWidget {
   const FlashCard({super.key});
 
   @override
-  _FlashCardState createState() => _FlashCardState();
-}
-
-class _FlashCardState extends State<FlashCard> {
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
-
-  final List<Map<String, String>> flashcards = List.generate(
-    15,
-    (index) => {
-      'word': 'Word $index',
-      'meaning': 'Meaning of Word $index',
-    },
-  );
-
-  bool isFlipped = false;
-
-  void _flipCard() {
-    setState(() {
-      isFlipped = !isFlipped;
-    });
-  }
-
-  void _nextPage() {
-    if (_currentPage < flashcards.length - 1) {
-      _pageController.nextPage(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-      setState(() {
-        _currentPage++;
-        isFlipped = false;
-      });
-    }
-  }
-
-  void _previousPage() {
-    if (_currentPage > 0) {
-      _pageController.previousPage(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-      setState(() {
-        _currentPage--;
-        isFlipped = false;
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final FlashCardController controller = Get.put(FlashCardController());
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(150.0),
@@ -92,21 +46,21 @@ class _FlashCardState extends State<FlashCard> {
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    CircularProgressIndicator(
-                      value: (_currentPage + 1) / 15,
+                    Obx(() => CircularProgressIndicator(
+                      value: (controller.currentPage.value + 1) / 15,
                       strokeWidth: 4,
                       valueColor:
                           const AlwaysStoppedAnimation<Color>(Colors.purple),
                       backgroundColor: Colors.transparent,
-                    ),
-                    Text(
-                      "${_currentPage + 1}/15",
+                    )),
+                    Obx(() => Text(
+                      "${controller.currentPage.value + 1}/15",
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
+                    )),
                   ],
                 ),
               ],
@@ -114,21 +68,18 @@ class _FlashCardState extends State<FlashCard> {
             const SizedBox(height: 30),
             Expanded(
               child: PageView.builder(
-                controller: _pageController,
-                itemCount: flashcards.length,
+                controller: controller.pageController,
+                itemCount: controller.flashcards.length,
                 onPageChanged: (index) {
-                  setState(() {
-                    _currentPage = index;
-                    isFlipped = false;
-                  });
+                  controller.setPage(index);
                 },
                 itemBuilder: (context, index) {
-                  final card = flashcards[index];
+                  final card = controller.flashcards[index];
                   return Padding(
                     padding: const EdgeInsets.only(right: 16.0),
                     child: AnimatedSwitcher(
-                      duration: Duration(seconds: 1),
-                      child: isFlipped
+                      duration: const Duration(seconds: 1),
+                      child: Obx(() => controller.isFlipped.value
                           ? Card(
                               key: ValueKey('back-${card['word']}'),
                               color: Colors.purple,
@@ -182,7 +133,7 @@ class _FlashCardState extends State<FlashCard> {
                                     ),
                                     GestureDetector(
                                       onTap: () {
-                                        _flipCard();
+                                        controller.flipCard();
                                       },
                                       child: Container(
                                         height: 50,
@@ -203,7 +154,7 @@ class _FlashCardState extends State<FlashCard> {
                               ),
                             ),
                     ),
-                  );
+                  ));
                 },
               ),
             ),
@@ -212,25 +163,25 @@ class _FlashCardState extends State<FlashCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 OutlinedButton(
-                  onPressed: _previousPage,
+                  onPressed: controller.previousPage,
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(
                         color: Colors.purple,
-                        width: 2), // Border color and width
+                        width: 2), 
                     shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero, // Square corners
+                      borderRadius: BorderRadius.zero,
                     ),
                   ),
                   child: const Text('Previous'),
                 ),
                 OutlinedButton(
-                  onPressed: _nextPage,
+                  onPressed: controller.nextPage,
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(
                         color: Colors.purple,
-                        width: 2), // Border color and width
+                        width: 2), 
                     shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero, // Square corners
+                      borderRadius: BorderRadius.zero,
                     ),
                   ),
                   child: const Text('Next'),
